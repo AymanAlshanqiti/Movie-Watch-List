@@ -8,6 +8,8 @@ import movies from "./data";
 
 class App extends Component {
   state = {
+    watchListQuery: "",
+    watchedListQuery: "",
     watchList: [],
     watched: [],
     tempMovieName: ""
@@ -55,16 +57,24 @@ class App extends Component {
 
   deleteWatchedMovie = movie => {
     this.setState({
-      watched: this.state.watched.filter(deletedMovie => deletedMovie != movie)
+      watched: this.state.watched.filter(deletedMovie => deletedMovie !== movie)
     });
   };
 
   deleteUnwatchMovie = movie => {
     this.setState({
       watchList: this.state.watchList.filter(
-        deletedMovie => deletedMovie != movie
+        deletedMovie => deletedMovie !== movie
       )
     });
+  };
+
+  filterWatchListMovies = query => {
+    this.setState({ watchListQuery: query.target.value });
+  };
+
+  filterWatchedListMovies = query => {
+    this.setState({ watchedListQuery: query.target.value });
   };
 
   componentDidMount = () => {
@@ -123,11 +133,20 @@ class App extends Component {
       );
     });
     return (
-      <div className="container text-center">
-        <div className="row justify-content-md-center my-4">dd</div>
+      <div className="App container text-center">
+        <div className="row justify-content-md-center my-4">
+          <h1 className="my-3">
+            <span className="badge badge-light">Movies Watch List</span>
+          </h1>
+        </div>
         <div className="row justify-content-md-center my-4">
           <div className="col-4">
-            <h1 className="my-3">Watch List</h1>
+            <h2 className="my-3">
+              <span className="badge badge-light">
+                Watch List : <span />
+                {this.state.watchList.length}
+              </span>
+            </h2>
             <div className="col-12">
               <div className="input-group mb-3">
                 <input
@@ -139,7 +158,7 @@ class App extends Component {
                 />
                 <div className="input-group-append">
                   <button
-                    className="btn btn-outline-info"
+                    className="btn btn-info"
                     type="button"
                     onClick={() =>
                       this.addMovieToWatchList(this.state.tempMovieName)
@@ -150,10 +169,31 @@ class App extends Component {
                 </div>
               </div>
             </div>
+            <input
+              value={this.state.value}
+              onChange={this.filterWatchListMovies}
+              type="text"
+              className="form-control ds-input"
+              placeholder="Search .."
+              style={{ position: "relative", verticalAlign: "top" }}
+            />
             {watchList}
           </div>
           <div className="col-4">
-            <h1 className="my-3">Watched</h1>
+            <h2 className="my-3">
+              <span className="badge badge-light">
+                Watched : <span />
+                {this.state.watched.length}
+              </span>
+            </h2>
+            <input
+              type="text"
+              value={this.state.value}
+              onChange={this.filterWatchedListMovies}
+              className="form-control ds-input"
+              placeholder="Search .."
+              style={{ position: "relative", verticalAlign: "top" }}
+            />
             {watched}
           </div>
         </div>
