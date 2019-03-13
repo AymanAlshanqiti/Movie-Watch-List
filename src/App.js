@@ -4,24 +4,26 @@ import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.min.js";
 
-import movies from "./data";
+// import movies from "./data";
+import { connect } from "react-redux";
+import * as actionsManager from "../src/store/actions";
 
 class App extends Component {
   state = {
     watchListQuery: "",
     watchedListQuery: "",
-    watchList: [],
-    watched: [],
+    // watchList: [],
+    // watched: [],
     tempMovieName: ""
   };
 
-  getWatchListMovies = () => {
-    return movies.filter(movie => movie.is_watched === false);
-  };
+  // getWatchListMovies = () => {
+  //   return movies.filter(movie => movie.is_watched === false);
+  // };
 
-  getWatchedListMovies = () => {
-    return movies.filter(movie => movie.is_watched === true);
-  };
+  // getWatchedListMovies = () => {
+  //   return movies.filter(movie => movie.is_watched === true);
+  // };
 
   takeMovieName = movieName => {
     this.setState({ tempMovieName: movieName.target.value });
@@ -78,14 +80,16 @@ class App extends Component {
   };
 
   componentDidMount = () => {
-    this.setState({
-      watchList: this.state.watchList.concat(this.getWatchListMovies()),
-      watched: this.state.watched.concat(this.getWatchedListMovies())
-    });
+    this.props.getWatchListMovies();
+    this.props.getWatchedListMovies();
+    // this.setState({
+    //   watchList: this.state.watchList.concat(this.getWatchListMovies()),
+    //   watched: this.state.watched.concat(this.getWatchedListMovies())
+    // });
   };
 
   render() {
-    const watchList = this.state.watchList.map(movie => {
+    const watchList = this.props.watchList.map(movie => {
       return (
         <ul className="list-group my-3">
           <li className="list-group-item">
@@ -109,7 +113,7 @@ class App extends Component {
       );
     });
 
-    const watched = this.state.watched.map(movie => {
+    const watched = this.props.watched.map(movie => {
       return (
         <ul className="list-group my-3">
           <li className="list-group-item list-group-item-light">
@@ -144,7 +148,7 @@ class App extends Component {
             <h2 className="my-3">
               <span className="badge badge-light">
                 Watch List : <span />
-                {this.state.watchList.length}
+                {this.props.watchList.length}
               </span>
             </h2>
             <div className="col-12">
@@ -153,8 +157,8 @@ class App extends Component {
                   type="text"
                   className="form-control"
                   placeholder="Add movie to the list .."
-                  value={this.state.tempMovieName}
-                  onChange={this.takeMovieName}
+                  value={this.props.tempMovieName}
+                  onChange={this.props.takeMovieName}
                 />
                 <div className="input-group-append">
                   <button
@@ -183,7 +187,7 @@ class App extends Component {
             <h2 className="my-3">
               <span className="badge badge-light">
                 Watched : <span />
-                {this.state.watched.length}
+                {this.props.watched.length}
               </span>
             </h2>
             <input
@@ -202,4 +206,23 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    watchList: state.watchList,
+    watched: state.watched,
+    tempMovieName: state.tempMovieName
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getWatchListMovies: () => dispatch(actionsManager.getWatchListMovies()),
+    getWatchedListMovies: () => dispatch(actionsManager.getWatchedListMovies()),
+    takeMovieName: () => dispatch(actionsManager.takeMovieName())
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
